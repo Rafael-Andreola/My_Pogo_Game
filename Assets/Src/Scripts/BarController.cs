@@ -7,6 +7,8 @@ public class BarController : MonoBehaviour
     [Header("Bar Settings")]
     [SerializeField] Rigidbody2D rb;
     [SerializeField] float moveSpeed;
+    [SerializeField] Camera camera;
+
 
     private Vector2 moveDirection;
 
@@ -22,6 +24,18 @@ public class BarController : MonoBehaviour
 
     private void Update()
     {
-        transform.Translate(moveSpeed * Time.deltaTime * moveDirection);
+
+        if(transform.position.y <= 4.47f && transform.position.y >= -4.47f)
+        {
+            transform.Translate(moveSpeed * Time.deltaTime * moveDirection);
+        }
+        else if (transform.position.y > 4.47)
+        {
+            transform.position = new Vector2(transform.position.x, 4.47f);
+        }
+        else if (transform.position.y < -4.47)
+        {
+            transform.position = new Vector2(transform.position.x, -4.47f);
+        }
     }
 }
