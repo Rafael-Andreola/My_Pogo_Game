@@ -42,26 +42,25 @@ public class PaddleController : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        Console.WriteLine("BATEU");
-
         if (collision.gameObject.CompareTag("Ball"))
         {
-            Vector2 hitPoint = collision.contacts[0].point;
-
             Vector2 paddleCenter = new Vector2(transform.position.x, transform.position.y);
-            float difference = paddleCenter.y - hitPoint.y;
+            float difference = paddleCenter.y - collision.transform.position.y;
 
-            if (hitPoint.y < paddleCenter.y)
+            Rigidbody2D ballRb = collision.GetComponent<Rigidbody2D>();
+
+            if (collision.transform.position.y < paddleCenter.y)
             {
+
                 //Hit the lower part of the paddle
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, -difference).normalized * moveSpeed;
+                ballRb.linearVelocity = new Vector2(-ballRb.linearVelocity.x, -difference).normalized * moveSpeed;
             }
             else
             {
                 //Hit the upper part of the paddle
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, difference).normalized * moveSpeed;
+                ballRb.linearVelocity = new Vector2(-ballRb.linearVelocity.x, difference).normalized * moveSpeed;
             }
         }
     }

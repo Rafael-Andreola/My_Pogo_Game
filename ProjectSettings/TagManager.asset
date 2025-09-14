@@ -7,6 +7,7 @@ TagManager:
   - Border
   - Bar
   - Ball
+  - UIManager
   layers:
   - Default
   - TransparentFX
