@@ -4,6 +4,8 @@ using UnityEngine;
 public class BallMovement : MonoBehaviour
 {
     [SerializeField] float Speed;
+    [SerializeField] float minAngle;
+
     private Rigidbody2D rb;
 
     private float borderLimitY;
@@ -30,17 +32,25 @@ public class BallMovement : MonoBehaviour
 
     private void ThrowBall()
     {
-        float yrandom = Random.Range(-1f, 1f);
-        float xrandom = Random.Range(-1f, 1f);
+        // Direção aleatória
+        float x = Random.Range(-1f, 1f);
+        float y = Random.Range(-1f, 1f);
 
+        Vector2 direction = new Vector2(x, y).normalized;
 
-        float y = yrandom == 0 ? -1f : yrandom;
-        float x = xrandom == 0 ? -1f : xrandom;
+        // Garante que o X não seja muito pequeno
+        if (Mathf.Abs(direction.x) < minAngle)
+        {
+            // ajusta para o mínimo mantendo o sinal
+            direction.x = Mathf.Sign(direction.x) * minAngle;
 
-        rb.linearVelocity = new Vector2(x, y).normalized * Speed;
+            // re-normaliza para manter a velocidade constante
+            direction = direction.normalized;
+        }
+
+        rb.linearVelocity = direction * Speed;
     }
 
-    // Update is called once per frame
     private void FixedUpdate()
     {
         Vector2 vector2 = transform.position;

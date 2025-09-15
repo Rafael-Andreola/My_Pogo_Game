@@ -1,43 +1,81 @@
+using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
 public class UiManager : MonoBehaviour
 {
     [SerializeField] GameObject ScoreBoardPrefab;
+    [SerializeField] float duration; // tempo para fazer o fade
+    [SerializeField] float durationAlpha100; // tempo para fazer o fade
+    [SerializeField] float targetAlpha;
 
     private GameObject scoreBoard;
-    private TextMeshPro playerScore;
-    private TextMeshPro enemyScore;
+    private TextMeshProUGUI leftScore;
+    private TextMeshProUGUI rightScore;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created  
     void Start()
     {
-        scoreBoard = Instantiate(ScoreBoardPrefab, Vector2.zero, Quaternion.identity, transform);
-        TextMeshPro[] Scores =  scoreBoard.GetComponentsInChildren<TextMeshPro>();
+        scoreBoard = Instantiate(ScoreBoardPrefab, Vector2.zero, Quaternion.identity);
+        TextMeshProUGUI[] Scores = scoreBoard.GetComponentsInChildren<TextMeshProUGUI>();
 
-        foreach(TextMeshPro score in Scores)
+        Debug.Log(Scores.Length);
+
+        foreach (TextMeshProUGUI score in Scores)
         {
-            if(score.gameObject.name == "PlayerScore")
+            if (score.gameObject.name == "LeftScore")
             {
-                playerScore = score;
+                leftScore = score;
             }
-            else if(score.gameObject.name == "EnemyScore")
+            else if (score.gameObject.name == "RightScore")
             {
-                enemyScore = score;
+                rightScore = score;
             }
         }
+
+        StartCoroutine(StartNFadeText(leftScore));
+        StartCoroutine(StartNFadeText(rightScore));
     }
 
-    public void AddPlayerScore(int value)
+    IEnumerator StartNFadeText(TextMeshProUGUI text)
     {
-        int currentScore = int.Parse(playerScore.text);
-        currentScore += value;
-        playerScore.text = currentScore.ToString();
+        Color originalColor = text.color;
+        // Garantir que começa totalmente opaco
+        text.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1f);
+
+        yield return new WaitForSeconds(durationAlpha100);
+
+        float time = 0;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+
+            float newAlpha = Mathf.Lerp(1f, targetAlpha, t);
+            text.color = new Color(originalColor.r, originalColor.g, originalColor.b, newAlpha);
+
+            yield return null;
+        }
+
+        // Garantir que chega no alpha final
+        text.color = new Color(originalColor.r, originalColor.g, originalColor.b, targetAlpha);
     }
-    public void AddEnemyScore(int value)
+
+    public void AddLeftScore(int value = 1)
     {
-        int currentScore = int.Parse(enemyScore.text);
+        int currentScore = int.Parse(leftScore.text);
         currentScore += value;
-        enemyScore.text = currentScore.ToString();
+        leftScore.text = currentScore.ToString();
+        StartCoroutine(StartNFadeText(leftScore));
+    }
+
+    public void AddRightScore(int value = 1)
+    {
+        int currentScore = int.Parse(rightScore.text);
+        currentScore += value;
+        rightScore.text = currentScore.ToString();
+        StartCoroutine(StartNFadeText(rightScore));
     }
 }

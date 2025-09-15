@@ -18,8 +18,8 @@ public class GameManager : MonoBehaviour
         mainCamera.backgroundColor = backgroundColor[Random.Range(0, backgroundColor.Length)];
 
         InstantiatePointColliders();
-        InstantiatePlayer();
-        InstantiateEnemy();
+        InstantiateLeftPaddle();
+        InstantiateRightPaddle();
         ResetBall();
     }
 
@@ -28,16 +28,19 @@ public class GameManager : MonoBehaviour
         float camHeight = Camera.main.orthographicSize * 2f;
         float camWidth = camHeight * Camera.main.aspect;
 
-        Instantiate(PointColliderPrefab, new Vector2(camWidth / 2 + 0.5f, 0f), Quaternion.identity, transform);
-        Instantiate(PointColliderPrefab, new Vector2(-camWidth / 2 - 0.5f, 0f), Quaternion.identity, transform);
+        GameObject rightCollider = Instantiate(PointColliderPrefab, new Vector2(camWidth / 2 + 0.5f, 0f), Quaternion.identity, transform);
+        rightCollider.GetComponent<PointCollider>().SetPlayerSide(PlayerSide.Left);
+
+        GameObject leftCollider = Instantiate(PointColliderPrefab, new Vector2(-camWidth / 2 - 0.5f, 0f), Quaternion.identity, transform);
+        leftCollider.GetComponent<PointCollider>().SetPlayerSide(PlayerSide.Right);
     }
 
-    private void InstantiatePlayer()
+    private void InstantiateLeftPaddle()
     {
         Instantiate(PlayerBarPrefab, new Vector2(-8f, 0f), Quaternion.identity, transform);
     }
 
-    private void InstantiateEnemy()
+    private void InstantiateRightPaddle()
     {
         Instantiate(PlayerBarPrefab, new Vector2(8f, 0f), Quaternion.identity, transform);
     }

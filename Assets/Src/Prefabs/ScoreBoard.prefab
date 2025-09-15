@@ -115,7 +115,7 @@ GameObject:
   - component: {fileID: 2167448299471647821}
   - component: {fileID: 3633250313176809469}
   m_Layer: 5
-  m_Name: EnemyScore
+  m_Name: RightScore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -251,7 +251,7 @@ GameObject:
   - component: {fileID: 4790187416163373019}
   - component: {fileID: 8834769077273796557}
   m_Layer: 5
-  m_Name: PlayerScore
+  m_Name: LeftScore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

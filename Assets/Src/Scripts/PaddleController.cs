@@ -37,11 +37,6 @@ public class PaddleController : MonoBehaviour
         moveDirection = context.ReadValue<Vector2>();
     }
 
-    private void Update()
-    {
-        
-    }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Ball"))
@@ -53,7 +48,6 @@ public class PaddleController : MonoBehaviour
 
             if (collision.transform.position.y < paddleCenter.y)
             {
-
                 //Hit the lower part of the paddle
                 ballRb.linearVelocity = new Vector2(-ballRb.linearVelocity.x, -difference).normalized * moveSpeed;
             }

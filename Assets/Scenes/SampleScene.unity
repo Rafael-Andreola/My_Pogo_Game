@@ -150,6 +150,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 519420032}
+  - {fileID: 1105224043}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &27179888
@@ -495,12 +496,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1105224042}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 27179887}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1105224044
 MonoBehaviour:
@@ -515,7 +516,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   ScoreBoardPrefab: {fileID: 1146597184791680349, guid: 98688955e97d3d3459646122c0bcefea, type: 3}
-  ScorePrefab: {fileID: 0}
+  duration: 2
+  durationAlpha100: 1
+  targetAlpha: 0.1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -523,4 +526,3 @@ SceneRoots:
   - {fileID: 619394802}
   - {fileID: 27179887}
   - {fileID: 180346188}
-  - {fileID: 1105224043}
