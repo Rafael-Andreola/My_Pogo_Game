@@ -51,6 +51,7 @@ MonoBehaviour:
   rb: {fileID: 7382328634976100422}
   moveSpeed: 5
   padding: 0.5
+  angleMagnitude: 5
 --- !u!114 &1314872302296700168
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,11 +4,17 @@ using UnityEngine;
 public class BallMovement : MonoBehaviour
 {
     [SerializeField] float Speed;
+    [SerializeField] float Velocity;
     [SerializeField] float minAngle;
 
     private Rigidbody2D rb;
 
     private float borderLimitY;
+
+    public float getVelocity()
+    {
+        return Velocity;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -57,8 +63,15 @@ public class BallMovement : MonoBehaviour
 
         if (vector2.y >= borderLimitY || vector2.y <= -borderLimitY)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -rb.linearVelocity.y).normalized * Speed;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -rb.linearVelocity.y).normalized * Velocity;
         }
+    }
+
+    void Update()
+    {
+        Velocity += Time.deltaTime * Speed; //Aumenta a velocidade da bola com o tempo
+
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y).normalized * Velocity; //Aumenta a velocidade da bola com o tempo
     }
 
 }

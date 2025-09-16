@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 
 
     private Camera mainCamera;
+    private GameObject ball;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -37,23 +38,30 @@ public class GameManager : MonoBehaviour
 
     private void InstantiateLeftPaddle()
     {
-        Instantiate(PlayerBarPrefab, new Vector2(-8f, 0f), Quaternion.identity, transform);
+        GameObject leftPaddle = Instantiate(PlayerBarPrefab, new Vector2(-8f, 0f), Quaternion.identity, transform);
+        leftPaddle.GetComponent<PaddleController>().SetPlayerType(PlayerType.AI);
     }
 
     private void InstantiateRightPaddle()
     {
-        Instantiate(PlayerBarPrefab, new Vector2(8f, 0f), Quaternion.identity, transform);
+        GameObject rightPaddle = Instantiate(PlayerBarPrefab, new Vector2(8f, 0f), Quaternion.identity, transform);
+        rightPaddle.GetComponent<PaddleController>().SetPlayerType(PlayerType.AI);
     }
 
     public void ResetBall()
     {
-        Destroy(GameObject.FindWithTag("Ball"));
-        Instantiate(BallPrefab, Vector2.zero, Quaternion.identity, transform);
+        Destroy(ball);
+        ball = Instantiate(BallPrefab, Vector2.zero, Quaternion.identity, transform);
+    }
+    
+    public GameObject GetBall()
+    {
+        return ball;
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             ResetBall();
         }
