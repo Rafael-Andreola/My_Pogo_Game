@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BarController
   rb: {fileID: 7382328634976100422}
-  moveSpeed: 5
+  moveSpeed: 5.5
   padding: 0.5
   angleMagnitude: 5
 --- !u!114 &1314872302296700168

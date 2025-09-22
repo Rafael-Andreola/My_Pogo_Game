@@ -7,13 +7,13 @@ public class PointCollider : MonoBehaviour
 {
     [SerializeField] PlayerSide playerSide;
 
-    private UiManager uiManager;
+    private GameManager gameManager;
 
     private void Start()
     {
         transform.localScale = new Vector3(1f, Camera.main.orthographicSize * 2f, 1f);
 
-        uiManager = FindFirstObjectByType<UiManager>();
+        gameManager = FindFirstObjectByType<GameManager>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -26,20 +26,13 @@ public class PointCollider : MonoBehaviour
         }
     }
 
+    private void AddPoint()
+    {
+        gameManager.AddScore(playerSide);
+    }
+
     public void SetPlayerSide(PlayerSide side)
     {
         playerSide = side;
-    }
-    
-    private void AddPoint()
-    {
-        if (playerSide == PlayerSide.Left)
-        {
-            uiManager.AddLeftScore(1);
-        }
-        else if (playerSide == PlayerSide.Right)
-        {
-            uiManager.AddRightScore(1);
-        }
     }
 }

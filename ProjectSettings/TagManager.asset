@@ -8,6 +8,8 @@ TagManager:
   - Bar
   - Ball
   - UIManager
+  - UI
+  - MainUI
   layers:
   - Default
   - TransparentFX
