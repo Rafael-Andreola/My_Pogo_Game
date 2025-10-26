@@ -3,21 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UiManager : MonoBehaviour
 {
     [SerializeField] float duration; // tempo para fazer o fade
-    [SerializeField] float durationAlpha100; // tempo para fazer o fade
-    [SerializeField] float targetAlpha;
-    [SerializeField] List<UIElement> UiElements;
+    [SerializeField] float durationAlpha100; // duração do alpha 100
+    [SerializeField] float targetAlpha; // alpha alvo (0 = invisível, 1 = totalmente visível)
+    [SerializeField] List<UIElement> UiElements; // Lista de elementos UI para popular o dicionário
 
-    Dictionary<UIIdentifier, GameObject> uiDictionary = new Dictionary<UIIdentifier, GameObject>();
+    Dictionary<UIIdentifier, GameObject> uiDictionary;
     TextMeshProUGUI leftScore;
     TextMeshProUGUI rightScore;
     GameObject winBox;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created  
-    void Start()
+    void Awake()
     {
         PopulateDictionary();
     }
@@ -34,23 +35,37 @@ public class UiManager : MonoBehaviour
 
         foreach (TextMeshProUGUI score in Scores)
         {
-            if (score.gameObject.name == "LeftScore")
+            if (score.name == "LeftScore")
             {
                 leftScore = score;
             }
-            else if (score.gameObject.name == "RightScore")
+            else if (score.name == "RightScore")
             {
                 rightScore = score;
             }
         }
 
-        StartCoroutine(StartNFadeText(leftScore));
-        StartCoroutine(StartNFadeText(rightScore));
+        ResetGameUI();
+
+        StartCoroutine(UI_Utils.StartNFadeText(leftScore, duration, durationAlpha100, targetAlpha));
+        StartCoroutine(UI_Utils.StartNFadeText(rightScore, duration, durationAlpha100, targetAlpha));
     }
 
     private GameObject GetUIElement(UIIdentifier identifier)
     {
-        return uiDictionary.GetValueOrDefault(identifier);
+        if (uiDictionary == null || uiDictionary.Count == 0)
+        {
+            Debug.Log("Dicionário de UI nulo ou vazio");
+            return null;
+        }
+
+        if (uiDictionary.TryGetValue(identifier, out GameObject uiElement) == false)
+        {
+            Debug.LogWarning($"UI com identificador {identifier} não encontrada no dicionário.");
+            return null;
+        }
+
+        return uiElement;
     }
 
     private void ShowUI(UIIdentifier identifier)
@@ -72,57 +87,22 @@ public class UiManager : MonoBehaviour
 
     private void PopulateDictionary()
     {
+        uiDictionary = new Dictionary<UIIdentifier, GameObject>();
+
         foreach (UIElement element in UiElements)
         {
             uiDictionary.Add(element.uiIdentifier, element.uiObject);
         }
     }
 
-    IEnumerator StartNFadeText(TextMeshProUGUI text)
-    {
-        Color originalColor = text.color;
-        // Garantir que começa totalmente opaco
-        text.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1f);
-
-        yield return new WaitForSeconds(durationAlpha100);
-
-        float time = 0;
-
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            float t = time / duration;
-
-            float newAlpha = Mathf.Lerp(1f, targetAlpha, t);
-            text.color = new Color(originalColor.r, originalColor.g, originalColor.b, newAlpha);
-
-            yield return null;
-        }
-
-        // Garantir que chega no alpha final
-        text.color = new Color(originalColor.r, originalColor.g, originalColor.b, targetAlpha);
-    }
-
     public void AddScore(PlayerSide side, int value = 1)
     {
-        TextMeshProUGUI scoreText = null;
+        int currentScore = GetScore(side);
+        currentScore += value;
 
-        if (side == PlayerSide.Left)
-        {
-            scoreText = leftScore;
-        }
-        else if (side == PlayerSide.Right)
-        {
-            scoreText = rightScore;
-        }
-
-        if (scoreText != null)
-        {
-            int currentScore = int.Parse(scoreText.text);
-            currentScore += value;
-            scoreText.text = currentScore.ToString();
-            StartCoroutine(StartNFadeText(scoreText));
-        }
+        TextMeshProUGUI scoreText = side == PlayerSide.Left ? leftScore : rightScore;
+        scoreText.text = currentScore.ToString();
+        StartCoroutine(UI_Utils.StartNFadeText(scoreText, duration, durationAlpha100, targetAlpha));
     }
 
     public int GetScore(PlayerSide side) => side switch
@@ -134,18 +114,19 @@ public class UiManager : MonoBehaviour
 
     public void ShowWinText(PlayerSide side)
     {
-        // winBox = Instantiate(WinBoxPrefab, Vector2.zero, Quaternion.identity);
+        GameObject winBox = GetUIElement(UIIdentifier.WinBox);
 
-        // TextMeshProUGUI winText = winBox.GetComponentInChildren<TextMeshProUGUI>();
+        TextMeshProUGUI winText = winBox.GetComponentInChildren<TextMeshProUGUI>();
+        winBox.SetActive(true);
 
-        // if (winText != null)
-        // {
-        //     winText.text = side == PlayerSide.Left ? "Left Player Wins!" : "Right Player Wins!";
-        //     winBox.GetComponentInChildren<Button>().onClick.AddListener(() =>
-        // {
-        //     FindFirstObjectByType<GameManager>().ResetGame();
-        // });
-        // }
+        if (winText != null)
+        {
+            winText.text = side == PlayerSide.Left ? "Left Player Wins!" : "Right Player Wins!";
+            winBox.GetComponentInChildren<Button>().onClick.AddListener(() =>
+            {
+                FindFirstObjectByType<GameManager>().ResetMatch();
+            });
+        }
     }
 
     public void ResetGameUI()

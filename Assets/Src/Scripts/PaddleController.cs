@@ -11,15 +11,15 @@ public class PaddleController : MonoBehaviour
     [SerializeField] float padding = 0.5f;
     [SerializeField] float angleMagnitude;
 
+    private Paddle paddle;
 
-    PlayerType player;
     private Vector2 moveDirection;
     private float borderLimitY;
 
     private void FixedUpdate()
     {
 
-        if(player == PlayerType.AI)
+        if(paddle.GetPlayerType() == PlayerType.AI)
         {
             GameObject ball = GameObject.FindFirstObjectByType<GameManager>().GetBall();
             
@@ -55,9 +55,9 @@ public class PaddleController : MonoBehaviour
 
         borderLimitY = Camera.main.orthographicSize - padding;
 
-        if (player == PlayerType.AI)
+        if (paddle.GetPlayerType() == PlayerType.AI)
         {
-            moveSpeed = moveSpeed / 2; //AI moves slower than player
+            moveSpeed /= 1.7f; //AI moves slower than player
         }
     }
 
@@ -66,10 +66,12 @@ public class PaddleController : MonoBehaviour
         moveDirection = context.ReadValue<Vector2>();
     }
 
-    public void SetPlayerType(PlayerType playerType)
+    public void SetPaddle(Paddle newPaddle)
     {
-        player = playerType;
+        paddle = newPaddle;
     }
+
+    public PlayerSide GetPlayerSide() => paddle.GetPlayerSide();
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

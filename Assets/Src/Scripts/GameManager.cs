@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -12,48 +13,62 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject mainUI;
 
     private Camera mainCamera;
-    private GameObject ball;
     private UiManager uiManager;
-    public static GameManager Instance { get; private set; }
+
+    //InGame Objects
+    private GameObject ball;
+    private PaddleController[] paddles;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         uiManager = mainUI.GetComponent<UiManager>();
-        StartGame();
+        mainCamera = Camera.main;
+        paddles = new PaddleController[0];
     }
 
-    private void StartGame()
+    public void StartGame()
     {
-        mainCamera = Camera.main;
+        float camWidth = this.GetCameraWidth();
+
+        InstantiatePaddle(new Vector2((-camWidth/2) + 1f, 0f), PlayerType.Player1, PlayerSide.Left);
+        InstantiatePaddle(new Vector2((camWidth/2) - 1f, 0f), PlayerType.AI, PlayerSide.Right);
+
+        ResetMatch();
+        InstantiatePointColliders();
+    }
+
+    public void ResetMatch()
+    {
         mainCamera.backgroundColor = backgroundColor[Random.Range(0, backgroundColor.Length)];
 
         mainUI.SetActive(true);
         uiManager.ShowInGameUI();
 
-        InstantiatePointColliders();
-        InstantiateLeftPaddle();
-        InstantiateRightPaddle();
+        ResetPaddles();
         ResetBall();
     }
 
     private void ResetPaddles()
     {
-        PaddleController[] paddles = FindObjectsOfType<PaddleController>();
-
         foreach (PaddleController paddle in paddles)
         {
-            Destroy(paddle.gameObject);
-        }
+            Debug.Log(paddle);
 
-        InstantiateLeftPaddle();
-        InstantiateRightPaddle();
+            if (paddle.GetPlayerSide() == PlayerSide.Left)
+            {
+                paddle.gameObject.transform.position = new Vector2(-8f, 0f);
+            }
+            else
+            {
+                paddle.gameObject.transform.position = new Vector2(8f, 0f);
+            }
+        }
     }
 
     private void InstantiatePointColliders()
     {
-        float camHeight = Camera.main.orthographicSize * 2f;
-        float camWidth = camHeight * Camera.main.aspect;
+        float camWidth = this.GetCameraWidth();
 
         GameObject rightCollider = Instantiate(PointColliderPrefab, new Vector2(camWidth / 2 + 0.5f, 0f), Quaternion.identity, transform);
         rightCollider.GetComponent<PointCollider>().SetPlayerSide(PlayerSide.Left);
@@ -62,16 +77,19 @@ public class GameManager : MonoBehaviour
         leftCollider.GetComponent<PointCollider>().SetPlayerSide(PlayerSide.Right);
     }
 
-    private void InstantiateLeftPaddle()
+    private float GetCameraWidth()
     {
-        GameObject leftPaddle = Instantiate(PlayerBarPrefab, new Vector2(-8f, 0f), Quaternion.identity, transform);
-        leftPaddle.GetComponent<PaddleController>().SetPlayerType(PlayerType.Player1);
+        float height = Camera.main.orthographicSize * 2f;
+        return height * Camera.main.aspect;
     }
 
-    private void InstantiateRightPaddle()
+    private void InstantiatePaddle(Vector2 position, PlayerType playerType, PlayerSide playerSide)
     {
-        GameObject rightPaddle = Instantiate(PlayerBarPrefab, new Vector2(8f, 0f), Quaternion.identity, transform);
-        rightPaddle.GetComponent<PaddleController>().SetPlayerType(PlayerType.AI);
+        GameObject paddleObject = Instantiate(PlayerBarPrefab, position, Quaternion.identity, transform);
+
+        paddleObject.GetComponent<PaddleController>().SetPaddle(new Paddle(playerType, playerSide));
+        paddleObject.name = playerType.ToString();
+        paddles.Append(paddleObject.GetComponent<PaddleController>());
     }
 
     public void ResetBall()
@@ -91,6 +109,14 @@ public class GameManager : MonoBehaviour
         {
             ResetBall();
         }
+        else if (Input.GetKeyDown(KeyCode.P))
+        {
+            StartGame();
+        }
+        else if (Input.GetKeyDown(KeyCode.M))
+        {
+            ResetMatch();
+        }
     }
 
     public void AddScore(PlayerSide side, int value = 1)
@@ -103,12 +129,5 @@ public class GameManager : MonoBehaviour
             ball.SetActive(false);
             uiManager.ShowWinText(side);
         }
-    }
-
-    public void ResetGame()
-    {
-        uiManager.ResetGameUI();
-        ResetBall();
-        ResetPaddles();
     }
 }
